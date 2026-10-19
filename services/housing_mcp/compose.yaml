@@ -1,0 +1,5 @@
+# homefund-housing-mcp: owned by the housing_mcp lane. Redeclare any root network you join, e.g.
+# networks:
+#   internal:
+#     internal: true
+services: {}

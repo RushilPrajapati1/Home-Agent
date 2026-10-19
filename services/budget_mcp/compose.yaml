@@ -1,0 +1,5 @@
+# homefund-budget-mcp: owned by the budget_mcp lane. Redeclare any root network you join, e.g.
+# networks:
+#   internal:
+#     internal: true
+services: {}

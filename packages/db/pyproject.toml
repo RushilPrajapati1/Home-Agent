@@ -1,0 +1,20 @@
+[project]
+name = "homefund-db"
+version = "0.1.0"
+description = "Home Fund database: SQLAlchemy 2 models, Alembic migrations, roles and the fixture seed."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "homefund-contracts",
+    "sqlalchemy>=2.0.36,<2.1",
+    "alembic>=1.14",
+    "psycopg[binary]>=3.2",
+    "pgvector>=0.3.6",
+    "cryptography>=44",
+]
+
+[tool.uv.sources]
+homefund-contracts = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.9,<0.10"]
+build-backend = "uv_build"

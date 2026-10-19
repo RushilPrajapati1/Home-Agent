@@ -1,0 +1,5 @@
+# homefund-api: owned by the api lane. Redeclare any root network you join, e.g.
+# networks:
+#   internal:
+#     internal: true
+services: {}

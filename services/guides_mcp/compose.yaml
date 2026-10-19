@@ -1,0 +1,5 @@
+# homefund-guides-mcp: owned by the guides_mcp lane. Redeclare any root network you join, e.g.
+# networks:
+#   internal:
+#     internal: true
+services: {}

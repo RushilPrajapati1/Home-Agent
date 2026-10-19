@@ -1,0 +1,14 @@
+[project]
+name = "homefund-ingest"
+version = "0.1.0"
+description = "Home Fund ingest service"
+requires-python = ">=3.12,<3.13"
+dependencies = ["homefund-contracts", "homefund-db"]
+
+[tool.uv.sources]
+homefund-contracts = { workspace = true }
+homefund-db = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.9,<0.10"]
+build-backend = "uv_build"

@@ -1,0 +1,5 @@
+# homefund-embed: owned by the embed lane. Redeclare any root network you join, e.g.
+# networks:
+#   internal:
+#     internal: true
+services: {}

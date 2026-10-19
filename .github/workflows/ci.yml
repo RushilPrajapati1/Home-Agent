@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_PYTHON: "3.12"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: ruff
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: mypy (strict for contracts and db)
+        run: uv run mypy --strict packages/contracts/src packages/db/src
+      - name: mypy (services)
+        run: uv run mypy services fixtures/generate.py
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: pytest (unit, no network)
+        run: uv run pytest -m "not integration"
+      - name: fixtures and schema are current
+        run: |
+          uv run python fixtures/generate.py --check
+          uv run homefund-export-schema --check
+
+  migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.7-pg17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: homefund
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d homefund"
+          --health-interval 3s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL_ADMIN: postgresql+psycopg://postgres:postgres@localhost:5432/homefund
+      DATABASE_URL_APP: postgresql+psycopg://app_rw:ci_app_rw@localhost:5432/homefund
+      APP_RW_PASSWORD: ci_app_rw
+      MCP_RO_PASSWORD: ci_mcp_ro
+      COLUMN_ENCRYPTION_KEY: jh53wfOcX8t6c9PCtXy3dtNWJ6oUN1NdQBL_UqfHCSM=
+      DEDUPE_HMAC_KEY: ci-only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: alembic upgrade / downgrade / upgrade
+        run: |
+          uv run alembic -c packages/db/alembic.ini upgrade head
+          uv run alembic -c packages/db/alembic.ini downgrade base
+          uv run alembic -c packages/db/alembic.ini upgrade head
+      - name: roles and seed (as app_rw)
+        run: |
+          uv run python -m homefund_db.roles
+          uv run python -m homefund_db.seed --fixtures fixtures
+      - name: pytest (integration)
+        run: uv run pytest -m integration

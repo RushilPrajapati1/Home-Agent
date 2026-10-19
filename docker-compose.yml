@@ -1,0 +1,70 @@
+# Home Fund local stack. Each service lane owns services/<name>/compose.yaml; this file
+# only pulls them in and defines the shared infrastructure. Needs Compose v2.20+.
+name: homefund
+
+include:
+  - services/budget_mcp/compose.yaml
+  - services/housing_mcp/compose.yaml
+  - services/guides_mcp/compose.yaml
+  - services/embed/compose.yaml
+  - services/ingest/compose.yaml
+  - services/importer/compose.yaml
+  - services/agent/compose.yaml
+  - services/api/compose.yaml
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.7-pg17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-homefund}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks:
+      - internal
+      - host_access
+    # Dev only: lets `make migrate` / `make seed` reach Postgres from the host.
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+
+  ollama:
+    image: ollama/ollama:0.40.5
+    volumes:
+      - ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    # egress is only for `make models` to pull weights; production mounts weights
+    # read-only and drops this network. Inference never calls out.
+    networks:
+      - internal
+      - egress
+    ports:
+      - "127.0.0.1:${OLLAMA_PORT:-11434}:11434"
+    # Uncomment for an NVIDIA GPU:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices: [{ driver: nvidia, count: all, capabilities: [gpu] }]
+
+networks:
+  # Private network: no route to the internet. Every service joins it.
+  internal:
+    internal: true
+  # Outbound access. Only housing-mcp, ingest and importer join it, each behind its own
+  # allowlist (see docs/ARCHITECTURE.md).
+  egress: {}
+  # Dev-only bridge used solely to publish Postgres on 127.0.0.1.
+  host_access: {}
+
+volumes:
+  pgdata:
+  ollama:

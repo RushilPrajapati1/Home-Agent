@@ -1,0 +1,73 @@
+[project]
+name = "homefund"
+version = "0.1.0"
+description = "Home Fund: an agentic RAG planner for saving toward a specific home. Workspace root."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "homefund-contracts",
+    "homefund-db",
+    "homefund-budget-mcp",
+    "homefund-housing-mcp",
+    "homefund-guides-mcp",
+    "homefund-embed",
+    "homefund-ingest",
+    "homefund-importer",
+    "homefund-agent",
+    "homefund-api",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15",
+    "pytest>=8.3",
+    "ruff>=0.11",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/*", "services/*"]
+
+[tool.uv.sources]
+homefund-contracts = { workspace = true }
+homefund-db = { workspace = true }
+homefund-budget-mcp = { workspace = true }
+homefund-housing-mcp = { workspace = true }
+homefund-guides-mcp = { workspace = true }
+homefund-embed = { workspace = true }
+homefund-ingest = { workspace = true }
+homefund-importer = { workspace = true }
+homefund-agent = { workspace = true }
+homefund-api = { workspace = true }
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["web", "packages/db/migrations/versions/*.py.mako"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "DTZ", "S"]
+ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S", "DTZ"]
+"fixtures/**" = ["S311", "DTZ"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["homefund_contracts", "homefund_db"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+warn_unused_configs = true
+ignore_missing_imports = true
+explicit_package_bases = true
+mypy_path = "$MYPY_CONFIG_FILE_DIR/packages/contracts/src:$MYPY_CONFIG_FILE_DIR/packages/db/src"
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib -ra"
+testpaths = ["packages", "services", "fixtures", "evals"]
+markers = [
+    "integration: needs the local Postgres from `make up` (run with `make test-integration`)",
+]

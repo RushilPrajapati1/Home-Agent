@@ -1,0 +1,13 @@
+{
+  "price": 450000,
+  "priceRangeLow": 427000,
+  "priceRangeHigh": 473000,
+  "latitude": 30.2401,
+  "longitude": -97.7712,
+  "subjectProperty": {
+    "formattedAddress": "4512 Larkspur Bend, Austin, TX 78704",
+    "zipCode": "78704",
+    "propertyType": "Single Family"
+  },
+  "comparables": []
+}

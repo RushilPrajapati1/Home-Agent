@@ -1,0 +1,1179 @@
+{
+  "$defs": {
+    "Cashflow": {
+      "additionalProperties": false,
+      "description": "Income, spending by category and fixed bills over the last N full months.",
+      "properties": {
+        "by_category": {
+          "items": {
+            "$ref": "#/$defs/CategorySpend"
+          },
+          "title": "By Category",
+          "type": "array"
+        },
+        "fixed_bills": {
+          "items": {
+            "$ref": "#/$defs/FixedBill"
+          },
+          "title": "Fixed Bills",
+          "type": "array"
+        },
+        "fixed_bills_monthly": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Fixed Bills Monthly",
+          "type": "string"
+        },
+        "months": {
+          "maximum": 12,
+          "minimum": 1,
+          "title": "Months",
+          "type": "integer"
+        },
+        "period_end": {
+          "description": "Last full month included",
+          "format": "date",
+          "title": "Period End",
+          "type": "string"
+        },
+        "period_start": {
+          "format": "date",
+          "title": "Period Start",
+          "type": "string"
+        },
+        "saved_monthly": {
+          "description": "take_home_monthly - spending_monthly",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Saved Monthly",
+          "type": "string"
+        },
+        "spending_monthly": {
+          "description": "Average spend, excluding Income and Transfer",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Spending Monthly",
+          "type": "string"
+        },
+        "take_home_monthly": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Take Home Monthly",
+          "type": "string"
+        }
+      },
+      "required": [
+        "months",
+        "period_start",
+        "period_end",
+        "take_home_monthly",
+        "spending_monthly",
+        "saved_monthly",
+        "by_category",
+        "fixed_bills",
+        "fixed_bills_monthly"
+      ],
+      "title": "Cashflow",
+      "type": "object"
+    },
+    "Category": {
+      "enum": [
+        "Dining and delivery",
+        "Groceries",
+        "Travel fund",
+        "Shopping",
+        "Rideshare",
+        "Subscriptions",
+        "Entertainment",
+        "Rent",
+        "Insurance",
+        "Utilities",
+        "Debt minimum",
+        "Income",
+        "Transfer",
+        "Other"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "CategorySpend": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/Category"
+        },
+        "monthly_avg": {
+          "description": "Average monthly outflow, positive",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Monthly Avg",
+          "type": "string"
+        },
+        "transactions": {
+          "description": "Transaction count over the whole period",
+          "minimum": 0,
+          "title": "Transactions",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "category",
+        "monthly_avg",
+        "transactions"
+      ],
+      "title": "CategorySpend",
+      "type": "object"
+    },
+    "Citation": {
+      "additionalProperties": false,
+      "properties": {
+        "chunk_id": {
+          "format": "uuid",
+          "title": "Chunk Id",
+          "type": "string"
+        },
+        "document": {
+          "description": "Document title, e.g. 'CFPB: Your home loan toolkit'",
+          "title": "Document",
+          "type": "string"
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Short supporting excerpt",
+          "title": "Quote"
+        },
+        "section": {
+          "title": "Section",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/GuideSource"
+        },
+        "tax_year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tax Year"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "chunk_id",
+        "source",
+        "document",
+        "section"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
+    "CostBreakdown": {
+      "additionalProperties": false,
+      "description": "Cash needed and monthly payment for one home. Produced only by housing-mcp.",
+      "properties": {
+        "cash_needed": {
+          "description": "down_payment + closing_costs + reserves",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Cash Needed",
+          "type": "string"
+        },
+        "closing_cost_pct": {
+          "description": "Percentage points: \"10\" means 10%, \"6.27\" means 6.27%",
+          "pattern": "^\\d{1,3}(\\.\\d{1,4})?$",
+          "title": "Closing Cost Pct",
+          "type": "string"
+        },
+        "closing_costs": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Closing Costs",
+          "type": "string"
+        },
+        "down_payment": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Down Payment",
+          "type": "string"
+        },
+        "down_pct": {
+          "description": "Percentage points: \"10\" means 10%, \"6.27\" means 6.27%",
+          "pattern": "^\\d{1,3}(\\.\\d{1,4})?$",
+          "title": "Down Pct",
+          "type": "string"
+        },
+        "insurance_monthly": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Insurance Monthly",
+          "type": "string"
+        },
+        "insurance_rate_pct": {
+          "description": "Percentage points: \"10\" means 10%, \"6.27\" means 6.27%",
+          "pattern": "^\\d{1,3}(\\.\\d{1,4})?$",
+          "title": "Insurance Rate Pct",
+          "type": "string"
+        },
+        "loan_amount": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Loan Amount",
+          "type": "string"
+        },
+        "monthly_payment": {
+          "description": "piti_monthly + pmi_monthly",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Monthly Payment",
+          "type": "string"
+        },
+        "piti_monthly": {
+          "description": "Principal + interest + property tax + insurance",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Piti Monthly",
+          "type": "string"
+        },
+        "pmi_monthly": {
+          "description": "Zero when down_pct >= 20",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Pmi Monthly",
+          "type": "string"
+        },
+        "pmi_rate_pct": {
+          "description": "Percentage points: \"10\" means 10%, \"6.27\" means 6.27%",
+          "pattern": "^\\d{1,3}(\\.\\d{1,4})?$",
+          "title": "Pmi Rate Pct",
+          "type": "string"
+        },
+        "price": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Price",
+          "type": "string"
+        },
+        "principal_interest_monthly": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Principal Interest Monthly",
+          "type": "string"
+        },
+        "property_tax_monthly": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Property Tax Monthly",
+          "type": "string"
+        },
+        "property_tax_rate_pct": {
+          "description": "Percentage points: \"10\" means 10%, \"6.27\" means 6.27%",
+          "pattern": "^\\d{1,3}(\\.\\d{1,4})?$",
+          "title": "Property Tax Rate Pct",
+          "type": "string"
+        },
+        "rate_as_of": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rate As Of"
+        },
+        "rate_pct": {
+          "description": "30-year fixed rate used",
+          "pattern": "^\\d{1,3}(\\.\\d{1,4})?$",
+          "title": "Rate Pct",
+          "type": "string"
+        },
+        "reserve_months": {
+          "description": "Months of PITI held as reserves",
+          "minimum": 0,
+          "title": "Reserve Months",
+          "type": "integer"
+        },
+        "reserves": {
+          "description": "reserve_months x PITI, rounded to the nearest $100",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Reserves",
+          "type": "string"
+        }
+      },
+      "required": [
+        "price",
+        "down_pct",
+        "down_payment",
+        "loan_amount",
+        "closing_cost_pct",
+        "closing_costs",
+        "reserve_months",
+        "reserves",
+        "cash_needed",
+        "rate_pct",
+        "principal_interest_monthly",
+        "property_tax_rate_pct",
+        "property_tax_monthly",
+        "insurance_rate_pct",
+        "insurance_monthly",
+        "piti_monthly",
+        "pmi_rate_pct",
+        "pmi_monthly",
+        "monthly_payment"
+      ],
+      "title": "CostBreakdown",
+      "type": "object"
+    },
+    "CostReady": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "home_cost": {
+          "$ref": "#/$defs/CostBreakdown"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "seq": {
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "type": {
+          "const": "cost_ready",
+          "default": "cost_ready",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "seq",
+        "at",
+        "home_cost"
+      ],
+      "title": "CostReady",
+      "type": "object"
+    },
+    "CreditScoreRange": {
+      "enum": [
+        "<620",
+        "620-679",
+        "680-739",
+        "740+"
+      ],
+      "title": "CreditScoreRange",
+      "type": "string"
+    },
+    "Cut": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "description": "Monthly reduction, positive",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Amount",
+          "type": "string"
+        },
+        "approved": {
+          "default": false,
+          "title": "Approved",
+          "type": "boolean"
+        },
+        "category": {
+          "$ref": "#/$defs/Category"
+        },
+        "current_monthly": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Current Monthly",
+          "type": "string"
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. 'Subscriptions, 7 down to 3'",
+          "title": "Detail"
+        },
+        "ease": {
+          "$ref": "#/$defs/Ease"
+        },
+        "new_monthly": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "New Monthly",
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "current_monthly",
+        "amount",
+        "new_monthly",
+        "ease"
+      ],
+      "title": "Cut",
+      "type": "object"
+    },
+    "CutsProposed": {
+      "additionalProperties": false,
+      "description": "The graph is paused at review_cuts; answer with POST /api/plans/{id}/review.",
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "cuts": {
+          "items": {
+            "$ref": "#/$defs/Cut"
+          },
+          "title": "Cuts",
+          "type": "array"
+        },
+        "gap_monthly": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Gap Monthly",
+          "type": "string"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "review_round": {
+          "minimum": 1,
+          "title": "Review Round",
+          "type": "integer"
+        },
+        "seq": {
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "total_monthly": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Total Monthly",
+          "type": "string"
+        },
+        "type": {
+          "const": "cuts_proposed",
+          "default": "cuts_proposed",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "seq",
+        "at",
+        "cuts",
+        "gap_monthly",
+        "total_monthly",
+        "review_round"
+      ],
+      "title": "CutsProposed",
+      "type": "object"
+    },
+    "Ease": {
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "title": "Ease",
+      "type": "string"
+    },
+    "Error": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "retryable": {
+          "default": false,
+          "title": "Retryable",
+          "type": "boolean"
+        },
+        "seq": {
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "type": {
+          "const": "error",
+          "default": "error",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "seq",
+        "at",
+        "code",
+        "message"
+      ],
+      "title": "Error",
+      "type": "object"
+    },
+    "FixedBill": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/Category"
+        },
+        "monthly_amount": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Monthly Amount",
+          "type": "string"
+        },
+        "name": {
+          "description": "Display name, e.g. 'Rent' or 'Student loan minimum'",
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "category",
+        "monthly_amount"
+      ],
+      "title": "FixedBill",
+      "type": "object"
+    },
+    "GuideSource": {
+      "enum": [
+        "cfpb",
+        "hud",
+        "glossary"
+      ],
+      "title": "GuideSource",
+      "type": "string"
+    },
+    "HomeGoal": {
+      "additionalProperties": false,
+      "description": "A complete goal. parse_goal produces it; ask_user fills whatever is missing.",
+      "properties": {
+        "address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Address"
+        },
+        "credit_score_range": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CreditScoreRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "down_pct": {
+          "description": "Down payment, percentage points (3, 3.5, 10, 20)",
+          "pattern": "^\\d{1,3}(\\.\\d{1,4})?$",
+          "title": "Down Pct",
+          "type": "string"
+        },
+        "move_in": {
+          "description": "Target move-in date",
+          "format": "date",
+          "title": "Move In",
+          "type": "string"
+        },
+        "price": {
+          "description": "Target home price",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Price",
+          "type": "string"
+        },
+        "saved": {
+          "description": "Cash already set aside for the home",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Saved",
+          "type": "string"
+        },
+        "zip": {
+          "pattern": "^\\d{5}$",
+          "title": "Zip",
+          "type": "string"
+        }
+      },
+      "required": [
+        "price",
+        "zip",
+        "move_in",
+        "down_pct",
+        "saved"
+      ],
+      "title": "HomeGoal",
+      "type": "object"
+    },
+    "NodeFinished": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "duration_ms": {
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "node": {
+          "$ref": "#/$defs/NodeName"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "seq": {
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "type": {
+          "const": "node_finished",
+          "default": "node_finished",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "seq",
+        "at",
+        "node",
+        "duration_ms"
+      ],
+      "title": "NodeFinished",
+      "type": "object"
+    },
+    "NodeName": {
+      "description": "Nodes of the LangGraph agent, as on the design's Agent graph page.",
+      "enum": [
+        "parse_goal",
+        "ask_user",
+        "estimate_home_cost",
+        "analyze_spending",
+        "project_savings",
+        "solve_cuts",
+        "review_cuts",
+        "explain_costs",
+        "write_plan"
+      ],
+      "title": "NodeName",
+      "type": "string"
+    },
+    "NodeStarted": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "node": {
+          "$ref": "#/$defs/NodeName"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "seq": {
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "type": {
+          "const": "node_started",
+          "default": "node_started",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "seq",
+        "at",
+        "node"
+      ],
+      "title": "NodeStarted",
+      "type": "object"
+    },
+    "PlanReady": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "plan": {
+          "$ref": "#/$defs/PlanResponse"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "seq": {
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "type": {
+          "const": "plan_ready",
+          "default": "plan_ready",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "seq",
+        "at",
+        "plan"
+      ],
+      "title": "PlanReady",
+      "type": "object"
+    },
+    "PlanResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "cash_needed": {
+          "anyOf": [
+            {
+              "description": "US dollars, e.g. \"1200.00\"",
+              "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cash Needed"
+        },
+        "cashflow": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Cashflow"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "title": "Citations",
+          "type": "array"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "cuts": {
+          "items": {
+            "$ref": "#/$defs/Cut"
+          },
+          "title": "Cuts",
+          "type": "array"
+        },
+        "goal": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HomeGoal"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "home_cost": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CostBreakdown"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "monthly_target": {
+          "anyOf": [
+            {
+              "description": "US dollars, e.g. \"1200.00\"",
+              "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Monthly saving needed to reach cash_needed by move_in",
+          "title": "Monthly Target"
+        },
+        "on_track": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "On Track"
+        },
+        "pending_question": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pending Question"
+        },
+        "plan": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Plan"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "projection": {
+          "items": {
+            "$ref": "#/$defs/Point"
+          },
+          "title": "Projection",
+          "type": "array"
+        },
+        "reach_month": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reach Month"
+        },
+        "review_rounds": {
+          "default": 0,
+          "title": "Review Rounds",
+          "type": "integer"
+        },
+        "status": {
+          "$ref": "#/$defs/PlanStatus"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "title": "Updated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "title": "PlanResponse",
+      "type": "object"
+    },
+    "PlanStatus": {
+      "enum": [
+        "running",
+        "awaiting_input",
+        "awaiting_review",
+        "done",
+        "failed"
+      ],
+      "title": "PlanStatus",
+      "type": "string"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "description": "One month on the savings chart. points[0] is the clock's current month at `start`.",
+      "properties": {
+        "balance": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Balance",
+          "type": "string"
+        },
+        "month": {
+          "format": "date",
+          "title": "Month",
+          "type": "string"
+        },
+        "target": {
+          "description": "US dollars, e.g. \"1200.00\"",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "month",
+        "balance",
+        "target"
+      ],
+      "title": "Point",
+      "type": "object"
+    },
+    "ProjectionReady": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "monthly": {
+          "description": "Monthly saving this projection assumes",
+          "pattern": "^-?\\d{1,12}(\\.\\d{1,2})?$",
+          "title": "Monthly",
+          "type": "string"
+        },
+        "months_to_goal": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Months To Goal"
+        },
+        "on_track": {
+          "title": "On Track",
+          "type": "boolean"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "projection": {
+          "items": {
+            "$ref": "#/$defs/Point"
+          },
+          "title": "Projection",
+          "type": "array"
+        },
+        "reach_month": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reach Month"
+        },
+        "seq": {
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "type": {
+          "const": "projection_ready",
+          "default": "projection_ready",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "seq",
+        "at",
+        "monthly",
+        "projection",
+        "months_to_goal",
+        "reach_month",
+        "on_track"
+      ],
+      "title": "ProjectionReady",
+      "type": "object"
+    },
+    "Question": {
+      "additionalProperties": false,
+      "description": "The graph is paused at ask_user; answer with POST /api/plans/{id}/answer.",
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "missing": {
+          "description": "HomeGoal fields still unknown",
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing",
+          "type": "array"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "seq": {
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "type": {
+          "const": "question",
+          "default": "question",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "seq",
+        "at",
+        "question"
+      ],
+      "title": "Question",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "cost_ready": "#/$defs/CostReady",
+      "cuts_proposed": "#/$defs/CutsProposed",
+      "error": "#/$defs/Error",
+      "node_finished": "#/$defs/NodeFinished",
+      "node_started": "#/$defs/NodeStarted",
+      "plan_ready": "#/$defs/PlanReady",
+      "projection_ready": "#/$defs/ProjectionReady",
+      "question": "#/$defs/Question"
+    },
+    "propertyName": "type"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/NodeStarted"
+    },
+    {
+      "$ref": "#/$defs/NodeFinished"
+    },
+    {
+      "$ref": "#/$defs/CostReady"
+    },
+    {
+      "$ref": "#/$defs/ProjectionReady"
+    },
+    {
+      "$ref": "#/$defs/CutsProposed"
+    },
+    {
+      "$ref": "#/$defs/Question"
+    },
+    {
+      "$ref": "#/$defs/PlanReady"
+    },
+    {
+      "$ref": "#/$defs/Error"
+    }
+  ],
+  "title": "Home Fund plan events (SSE)"
+}

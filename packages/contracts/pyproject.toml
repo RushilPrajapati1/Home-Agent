@@ -1,0 +1,13 @@
+[project]
+name = "homefund-contracts"
+version = "0.1.0"
+description = "Home Fund shared contracts: domain, MCP tool, API and SSE models. Single source of truth."
+requires-python = ">=3.12,<3.13"
+dependencies = ["pydantic>=2.9,<3"]
+
+[project.scripts]
+homefund-export-schema = "homefund_contracts.export_schema:main"
+
+[build-system]
+requires = ["uv_build>=0.9,<0.10"]
+build-backend = "uv_build"

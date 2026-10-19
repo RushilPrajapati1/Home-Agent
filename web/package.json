@@ -1,0 +1,13 @@
+{
+  "name": "@homefund/web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Home Fund web app (React + Recharts). Placeholder: the web lane builds it.",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20 <21"
+  },
+  "scripts": {
+    "schema": "cd .. && uv run homefund-export-schema --out web/src/api/schema"
+  }
+}

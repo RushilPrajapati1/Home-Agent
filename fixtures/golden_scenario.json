@@ -1,0 +1,212 @@
+{
+  "name": "walkthrough_420k_10pct_jun2028",
+  "description": "The design's request walkthrough: $420,000 home, 10% down, June 2028 move-in. Every expected number is computed with Decimal by fixtures/generate.py.",
+  "user_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+  "clock": {
+    "type": "FixedClock",
+    "date": "2026-10-01"
+  },
+  "request": {
+    "text": "I want a $420,000 home with 10% down by June 2028.",
+    "goal": {
+      "price": "420000.00",
+      "zip": "78704",
+      "down_pct": "10",
+      "move_in": "2028-06-01",
+      "saved": "18000.00"
+    }
+  },
+  "conventions": {
+    "projection": "points[0] is the clock's month (2026-10) with balance=start; each later point adds `monthly`; reach_month is the first point with balance >= target",
+    "months_until_move_in": "calendar months from the clock's month to the move-in month",
+    "monthly_needed": "gap / months_until_move_in, rounded half-up to cents",
+    "reserves": "reserve_months x PITI, rounded half-up to the nearest $100",
+    "piti": "principal+interest (30-year fixed, rounded to cents) + property tax + insurance; PMI is reported separately and not part of PITI or reserves",
+    "cashflow_window": "the last 6 full months before the clock: Apr-Sep 2026",
+    "spending": "outflows in every category except Income and Transfer, after dedupe"
+  },
+  "mock_inputs": {
+    "fred_fixture": "fixtures/mocks/fred_mortgage30us.json",
+    "rentcast_property_fixture": "fixtures/mocks/rentcast_property.json",
+    "rentcast_value_fixture": "fixtures/mocks/rentcast_value.json",
+    "rate_pct": "6.27",
+    "rate_as_of": "2026-09-24",
+    "property_tax_rate_pct": "1.8",
+    "property_tax_source": "RentCast record in ZIP 78704: 2025 tax $8,100 on a $450,000 value",
+    "insurance_rate_pct": "0.5",
+    "pmi_rate_pct": "0.5",
+    "closing_cost_pct": "3",
+    "reserve_months": 2
+  },
+  "expected": {
+    "home_cost": {
+      "price": "420000.00",
+      "down_pct": "10",
+      "down_payment": "42000.00",
+      "loan_amount": "378000.00",
+      "closing_cost_pct": "3",
+      "closing_costs": "12600.00",
+      "reserve_months": 2,
+      "reserves": "6300.00",
+      "cash_needed": "60900.00",
+      "rate_pct": "6.27",
+      "rate_as_of": "2026-09-24",
+      "principal_interest_monthly": "2332.33",
+      "property_tax_rate_pct": "1.8",
+      "property_tax_monthly": "630.00",
+      "insurance_rate_pct": "0.5",
+      "insurance_monthly": "175.00",
+      "piti_monthly": "3137.33",
+      "pmi_rate_pct": "0.5",
+      "pmi_monthly": "157.50",
+      "monthly_payment": "3294.83"
+    },
+    "piti_range": [
+      "3125.00",
+      "3174.99"
+    ],
+    "cashflow": {
+      "months": 6,
+      "period_start": "2026-04-01",
+      "period_end": "2026-09-01",
+      "take_home_monthly": "6800.00",
+      "spending_monthly": "5600.00",
+      "saved_monthly": "1200.00",
+      "by_category": [
+        {
+          "category": "Rent",
+          "monthly_avg": "2400.00",
+          "transactions": 6
+        },
+        {
+          "category": "Dining and delivery",
+          "monthly_avg": "600.00",
+          "transactions": 137
+        },
+        {
+          "category": "Groceries",
+          "monthly_avg": "550.00",
+          "transactions": 61
+        },
+        {
+          "category": "Shopping",
+          "monthly_avg": "360.00",
+          "transactions": 38
+        },
+        {
+          "category": "Debt minimum",
+          "monthly_avg": "350.00",
+          "transactions": 6
+        },
+        {
+          "category": "Travel fund",
+          "monthly_avg": "280.00",
+          "transactions": 6
+        },
+        {
+          "category": "Rideshare",
+          "monthly_avg": "240.00",
+          "transactions": 63
+        },
+        {
+          "category": "Other",
+          "monthly_avg": "205.11",
+          "transactions": 39
+        },
+        {
+          "category": "Utilities",
+          "monthly_avg": "180.00",
+          "transactions": 12
+        },
+        {
+          "category": "Insurance",
+          "monthly_avg": "160.00",
+          "transactions": 12
+        },
+        {
+          "category": "Entertainment",
+          "monthly_avg": "150.00",
+          "transactions": 20
+        },
+        {
+          "category": "Subscriptions",
+          "monthly_avg": "124.89",
+          "transactions": 42
+        }
+      ],
+      "fixed_bills_monthly": "3090.00",
+      "fixed_by_category": {
+        "Rent": "2400.00",
+        "Utilities": "180.00",
+        "Insurance": "160.00",
+        "Debt minimum": "350.00"
+      },
+      "subscriptions_count": 7
+    },
+    "saved_so_far": "18000.00",
+    "gap": "42900.00",
+    "current_pace": {
+      "monthly": "1200.00",
+      "months_to_goal": 36,
+      "reach_month": "2029-10-01",
+      "months_late": 16,
+      "on_track": false
+    },
+    "deadline": {
+      "move_in_month": "2028-06-01",
+      "months_until_move_in": 20,
+      "monthly_needed": "2145.00",
+      "gap_per_month": "945.00"
+    },
+    "cuts": {
+      "min_total_monthly": "945.00",
+      "protected_untouched": [
+        "Debt minimum",
+        "Insurance",
+        "Rent",
+        "Utilities"
+      ],
+      "walkthrough_illustrative": [
+        {
+          "category": "Dining and delivery",
+          "amount": "300.00"
+        },
+        {
+          "category": "Travel fund",
+          "amount": "280.00"
+        },
+        {
+          "category": "Shopping",
+          "amount": "180.00"
+        },
+        {
+          "category": "Rideshare",
+          "amount": "120.00"
+        },
+        {
+          "category": "Subscriptions",
+          "amount": "72.00"
+        }
+      ],
+      "walkthrough_total": "952.00",
+      "note": "The solver may choose differently; it must reach min_total_monthly without touching protected categories or cutting more than a category spends."
+    },
+    "with_walkthrough_cuts": {
+      "monthly": "2152.00",
+      "months_to_goal": 20,
+      "reach_month": "2028-06-01",
+      "on_track": true
+    }
+  },
+  "dataset": {
+    "files": [
+      "fixtures/demo_user/transactions_labeled.csv",
+      "fixtures/demo_user/statement.csv",
+      "fixtures/demo_user/statement.ofx"
+    ],
+    "rows_total": 475,
+    "rows_after_dedupe": 472,
+    "exact_duplicates": 3,
+    "same_day_repeats": 4
+  }
+}

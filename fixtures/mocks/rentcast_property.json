@@ -1,0 +1,35 @@
+[
+  {
+    "id": "4512-Larkspur-Bend,-Austin,-TX-78704",
+    "formattedAddress": "4512 Larkspur Bend, Austin, TX 78704",
+    "addressLine1": "4512 Larkspur Bend",
+    "addressLine2": null,
+    "city": "Austin",
+    "state": "TX",
+    "zipCode": "78704",
+    "county": "Travis",
+    "latitude": 30.2401,
+    "longitude": -97.7712,
+    "propertyType": "Single Family",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "squareFootage": 1540,
+    "lotSize": 6970,
+    "yearBuilt": 1984,
+    "taxAssessments": {
+      "2025": {
+        "year": 2025,
+        "value": 450000,
+        "land": 210000,
+        "improvements": 240000
+      }
+    },
+    "propertyTaxes": {
+      "2025": {
+        "year": 2025,
+        "total": 8100
+      }
+    },
+    "_synthetic": "Fictional address for Home Fund fixtures"
+  }
+]
