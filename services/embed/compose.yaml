@@ -1,5 +1,58 @@
-# homefund-embed: owned by the embed lane. Redeclare any root network you join, e.g.
-# networks:
-#   internal:
-#     internal: true
-services: {}
+# homefund-embed: BGE-M3 (dense + sparse) and bge-reranker-v2-m3 over HTTP, internal only.
+# Weights live in the embed_models volume, filled once by `make embed-models` (the only step
+# with egress); the server itself runs with HF_HUB_OFFLINE=1 and no route out.
+services:
+  embed:
+    build:
+      context: ../..
+      dockerfile: services/embed/Dockerfile
+    environment:
+      EMBED_HOST: 0.0.0.0
+      EMBED_PORT: "8200"
+      EMBED_MODEL: ${EMBED_MODEL:-BAAI/bge-m3}
+      RERANK_MODEL: ${RERANK_MODEL:-BAAI/bge-reranker-v2-m3}
+      EMBED_DEVICE: ${EMBED_DEVICE:-auto}
+      EMBED_BATCH_SIZE: ${EMBED_BATCH_SIZE:-32}
+      HF_HOME: /models
+      HF_HUB_OFFLINE: "1"
+    volumes:
+      - embed_models:/models:ro
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8200/healthz')"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s
+    # Uncomment for an NVIDIA GPU (fp16 turns on automatically with CUDA):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices: [{ driver: nvidia, count: all, capabilities: [gpu] }]
+
+  # One-off: `make embed-models` pulls both models into the volume.
+  embed-models:
+    profiles: [tools]
+    build:
+      context: ../..
+      dockerfile: services/embed/Dockerfile
+    user: root
+    environment:
+      HF_HOME: /models
+    command:
+      - python
+      - -c
+      - "from huggingface_hub import snapshot_download as get; [get(m) for m in ('${EMBED_MODEL:-BAAI/bge-m3}', '${RERANK_MODEL:-BAAI/bge-reranker-v2-m3}')]"
+    volumes:
+      - embed_models:/models
+    networks:
+      - egress
+
+networks:
+  internal:
+    internal: true
+  egress: {}
+
+volumes:
+  embed_models:

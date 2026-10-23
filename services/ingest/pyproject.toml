@@ -1,13 +1,27 @@
 [project]
 name = "homefund-ingest"
 version = "0.1.0"
-description = "Home Fund ingest service"
+description = "Home Fund ingest job: fetch, chunk and embed CFPB and HUD guides into guide_chunks"
 requires-python = ">=3.12,<3.13"
-dependencies = ["homefund-contracts", "homefund-db"]
+dependencies = [
+    "homefund-contracts",
+    "homefund-db",
+    "homefund-embed",
+    "beautifulsoup4>=4.12",
+    "lxml>=5",
+    "pdfplumber>=0.11",
+    "httpx>=0.28",
+    "pgvector>=0.3.6",
+    "pyyaml>=6",
+]
+
+[project.scripts]
+homefund-ingest = "homefund_ingest.cli:main"
 
 [tool.uv.sources]
 homefund-contracts = { workspace = true }
 homefund-db = { workspace = true }
+homefund-embed = { workspace = true }
 
 [build-system]
 requires = ["uv_build>=0.9,<0.10"]

@@ -1,0 +1,139 @@
+"""Build fixtures/guides-rag/corpus.json: 20 searchable chunks (plus their parents) with the
+real BGE-M3 vectors from guide_chunks, and for each test query its real dense/sparse
+embedding and bge-reranker-v2-m3 score against every chunk.
+
+Unit tests replay these, so retrieval tests use genuine model outputs with no model server.
+Run `make guides-mcp-fixtures` after `make ingest`, with the embed service up.
+"""
+# SQL here splices only the fixed column list; every value is a bound parameter.
+
+from __future__ import annotations
+
+import asyncio
+import json
+from pathlib import Path
+
+from homefund_embed.client import EmbedClient
+from homefund_guides_mcp.store import PgGuideStore, _chunk
+from sqlalchemy import text
+
+OUT = Path(__file__).resolve().parents[3] / "fixtures" / "guides-rag" / "corpus.json"
+
+GLOSSARY = [
+    "PMI", "PITI", "Escrow", "Debt ratio", "Loan-to-value ratio", "Mortgage closing costs",
+    "Earnest money", "FHA funding fee", "Down payment", "Mortgage insurance", "Reserves",
+]  # fmt: skip
+LE = ["Sample Loan Estimate", "Actions to take"]
+CD = ["Sample Closing Disclosure", "Get definitions"]
+HANDBOOK = "FHA Single Family Housing Policy Handbook 4000.1"
+LIMITS = "HUD\u2019s Federal Housing Administration Announces 2026 Loan Limits"
+SECTIONS = [
+    ("cfpb-pmi", []),
+    ("cfpb-pmi", ["How do I pay for PMI?"]),
+    ("cfpb-closing-fees", []),
+    ("cfpb-loan-estimate", [*LE, "What are your estimated closing costs?"]),
+    ("cfpb-closing-disclosure", [*CD, "Total Closing Costs"]),
+    ("hud-ml-2023-05", [HANDBOOK, "Annual Mortgage Insurance Premium (MIP)"]),
+    ("hud-2026-loan-limits", [LIMITS, "Forward Mortgage Loan Limits"]),
+    ("cfpb-escrow", []),
+    ("cfpb-dti", []),
+]
+QUERIES = [
+    "What is PMI?",
+    "What closing costs will I pay when I buy a house?",
+    "How much is the FHA annual mortgage insurance premium?",
+    "What is the FHA loan limit for a one-unit home in 2026?",
+    "How much cash reserves do I need after closing?",
+    "What is a debt-to-income ratio?",
+    "Do I get my earnest money back?",
+]
+
+
+def row_json(r: object, with_vectors: bool) -> dict[str, object]:
+    from pgvector import SparseVector, Vector
+
+    out: dict[str, object] = {
+        "id": str(r.id),  # type: ignore[attr-defined]
+        "parent_id": str(r.parent_id) if r.parent_id else None,  # type: ignore[attr-defined]
+        "content": r.content,  # type: ignore[attr-defined]
+        "metadata": r.metadata,  # type: ignore[attr-defined]
+    }
+    if with_vectors:
+        dense = Vector.from_text(r.dense).to_list()  # type: ignore[attr-defined]
+        sparse = SparseVector.from_text(r.sparse)  # type: ignore[attr-defined]
+        out["dense"] = [round(x, 6) for x in dense]
+        out["sparse"] = {
+            "indices": sparse.indices(),
+            "values": [round(v, 6) for v in sparse.values()],
+        }
+    return out
+
+
+async def main() -> None:
+    store = PgGuideStore.from_env()
+    cols = "id, parent_id, content, metadata, dense::text AS dense, sparse::text AS sparse"
+    with store._engine.begin() as conn:
+        picked = list(
+            conn.execute(
+                text(f"SELECT {cols} FROM guide_chunks WHERE metadata->>'term' = ANY(:t)"),  # noqa: S608
+                {"t": GLOSSARY},
+            )
+        )
+        for doc_id, path in SECTIONS:
+            row = conn.execute(
+                text(
+                    f"SELECT {cols} FROM guide_chunks WHERE metadata->>'doc_id' = :d "  # noqa: S608
+                    "AND metadata->>'role' = 'child' "
+                    "AND metadata->'section_path' = CAST(:p AS jsonb) "
+                    "ORDER BY (metadata->>'chunk_index')::int LIMIT 1"
+                ),
+                {"d": doc_id, "p": json.dumps(path)},
+            ).one()
+            picked.append(row)
+        parent_ids = sorted({str(r.parent_id) for r in picked if r.parent_id})
+        parents = list(
+            conn.execute(
+                text(f"SELECT {cols} FROM guide_chunks WHERE id = ANY(CAST(:ids AS uuid[]))"),  # noqa: S608
+                {"ids": parent_ids},
+            )
+        )
+    assert len(picked) == 20, len(picked)
+    chunks = [_chunk(r) for r in picked]
+    queries: dict[str, object] = {}
+    async with EmbedClient() as embed:
+        health = await embed.health()
+        emb = await embed.embed(QUERIES, sparse=True)
+        assert emb.sparse is not None
+        for q, dense, sparse in zip(QUERIES, emb.dense, emb.sparse, strict=True):
+            scores = await embed.rerank(q, [c.rerank_text for c in chunks])
+            queries[q] = {
+                "dense": [round(x, 6) for x in dense],
+                "sparse": {
+                    "indices": sparse.indices,
+                    "values": [round(v, 6) for v in sparse.values],
+                },
+                "rerank": {str(c.id): round(s, 6) for c, s in zip(chunks, scores, strict=True)},
+            }
+    OUT.write_text(
+        json.dumps(
+            {
+                "about": "Generated by services/guides_mcp/scripts/build_fixture_corpus.py",
+                "embed_model": health.embed_model,
+                "rerank_model": health.rerank_model,
+                "chunks": [row_json(r, True) for r in picked]
+                + [row_json(r, False) for r in parents],
+                "queries": queries,
+            },
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    print(
+        f"wrote {OUT}: {len(picked)} searchable chunks, {len(parents)} parents, "
+        f"{len(queries)} queries"
+    )
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

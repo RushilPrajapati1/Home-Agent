@@ -1,0 +1,274 @@
+# Guides corpus for Home Fund. Official CFPB and HUD pages only; ingest fetches each once into
+# data/guides/<id>.<format> and never needs the network again to re-chunk.
+# `make ingest-fetch` downloads missing files and fills in fetched + sha256; edit the rest by hand.
+#   source:   cfpb | hud | glossary (Citation.source). Glossary entries use `glossary`.
+#   kind:     guide (heading-aware parent/child) | glossary (one term per chunk)
+#   tax_year: set only when the figures are for one year (e.g. FHA loan limits); else null.
+
+drop_sections:
+- Don't see what you're looking for?
+- Browse related questions
+- Search for your question
+- About links and references
+- Tools for this phase
+- Legal disclaimer
+- About us
+documents:
+- id: cfpb-prepare
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'CFPB Buying a House: Preparing to shop for your mortgage'
+  url: https://www.consumerfinance.gov/owning-a-home/prepare/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: 77568342bcdbe8d606aabd5653441dfe7a7b0b54b6b91cb82053470408e372c9
+  tax_year: null
+- id: cfpb-explore
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'CFPB Buying a House: Exploring your loan choices'
+  url: https://www.consumerfinance.gov/owning-a-home/explore/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: a37bd3b588754291014100698db695213efa980c5c364600984ecf94e56ed811
+  tax_year: null
+- id: cfpb-compare
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'CFPB Buying a House: Choosing a loan offer'
+  url: https://www.consumerfinance.gov/owning-a-home/compare/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: 0157c0bad83f2b89523bc443b7f01f4c3afd381d35dac9dd7c161c310db8d1c5
+  tax_year: null
+- id: cfpb-close
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'CFPB Buying a House: Closing on your new home'
+  url: https://www.consumerfinance.gov/owning-a-home/close/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: 23beb0c7c003b57cee3b6162b2f0c03b37adf196e32b1be7e2d5123d6b16a59b
+  tax_year: null
+- id: cfpb-loan-types
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'CFPB Buying a House: Understand the different kinds of loans available'
+  url: https://www.consumerfinance.gov/owning-a-home/explore/understand-the-different-kinds-of-loans-available/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: 7560792c799cdaf41d513d6a6125961196b788676f064c11ed747b1856f01abb
+  tax_year: null
+- id: cfpb-loan-estimate
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'CFPB: Loan Estimate explainer'
+  url: https://www.consumerfinance.gov/owning-a-home/loan-estimate/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: 4c715eb838b8880fe86434f14aac4c8978be425e06c2bae65e266d883cff3db7
+  tax_year: null
+- id: cfpb-closing-disclosure
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'CFPB: Closing Disclosure explainer'
+  url: https://www.consumerfinance.gov/owning-a-home/closing-disclosure/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: 1f99ad89c1731e3a5c659734b86f16d6e4366e920959eebd3e15ba6c3ef7a745
+  tax_year: null
+- id: cfpb-closing-fees
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'Ask CFPB: What fees or charges are paid when closing on a mortgage and who pays them?'
+  url: https://www.consumerfinance.gov/ask-cfpb/what-fees-or-charges-are-paid-when-closing-on-a-mortgage-and-who-pays-them-en-1845/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: df2436a17d89645962903267568c250d652be7c42b1cfb0486959bd27e2b7fc6
+  tax_year: null
+- id: cfpb-total-payment
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'Ask CFPB: On a mortgage, what''s the difference between my principal and interest payment and
+    my total monthly payment?'
+  url: https://www.consumerfinance.gov/ask-cfpb/on-a-mortgage-whats-the-difference-between-my-principal-and-interest-payment-and-my-total-monthly-payment-en-1941/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: b275a36fd3bf4b0b498815ca85cc912afe4ab00ad75de0b246bb6c6ff0ce17c8
+  tax_year: null
+- id: cfpb-pmi
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'Ask CFPB: What is private mortgage insurance?'
+  url: https://www.consumerfinance.gov/ask-cfpb/what-is-private-mortgage-insurance-en-122/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: 5b83ef5714af8bf598120eadb7669542faf306c8a3afbc6c598c8fbcc1c288e5
+  tax_year: null
+- id: cfpb-mortgage-insurance
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'Ask CFPB: What is mortgage insurance and how does it work?'
+  url: https://www.consumerfinance.gov/ask-cfpb/what-is-mortgage-insurance-and-how-does-it-work-en-1953/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: 08c47a696132f368f5952b114ec6e8f3ca577f50863c2337bee00d1b269355a4
+  tax_year: null
+- id: cfpb-fha-loan
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'CFPB Buying a House: FHA loans'
+  url: https://www.consumerfinance.gov/owning-a-home/fha-loans/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: 5f0019126df9102eb668a63866e6f98c3350ad9e9cced038ad52fbc354186e08
+  tax_year: null
+- id: cfpb-escrow
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'Ask CFPB: What is an escrow or impound account?'
+  url: https://www.consumerfinance.gov/ask-cfpb/what-is-an-escrow-or-impound-account-en-140/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: ea4c15fed706d1ac92acb79ea7b47611891817e315d4c42680ffa6788d0469bf
+  tax_year: null
+- id: cfpb-dti
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'Ask CFPB: What is a debt-to-income ratio?'
+  url: https://www.consumerfinance.gov/ask-cfpb/what-is-a-debt-to-income-ratio-en-1791/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: a2abd19d2354ce4322822a36c4dab456c6c5930ad2d33cbc5da97ebe4deb1db0
+  tax_year: null
+- id: cfpb-ltv
+  source: cfpb
+  kind: guide
+  publisher: cfpb
+  title: 'Ask CFPB: What is a loan-to-value ratio and how does it relate to my costs?'
+  url: https://www.consumerfinance.gov/ask-cfpb/what-is-a-loan-to-value-ratio-and-how-does-it-relate-to-my-costs-en-121/
+  selector: .u-layout-grid__main
+  fetched: '2026-10-22'
+  sha256: dd6870b01c315d670615eea74f0c33a5198e9daa8dd188d8d430ecca2ad55b8c
+  tax_year: null
+- id: hud-fha-loans
+  source: hud
+  kind: guide
+  publisher: hud
+  title: 'HUD: Let FHA loans help you'
+  url: https://www.hud.gov/helping-americans/loans
+  selector: .region-content
+  fetched: '2026-10-22'
+  sha256: 29a1f7f46177217cb860eb09ca5844b1fff715960b989e51450b275fe418aeed
+  tax_year: null
+- id: hud-buying-a-home
+  source: hud
+  kind: guide
+  publisher: hud
+  title: 'HUD: Buying a home'
+  url: https://www.hud.gov/helping-americans/buying-a-home
+  selector: .region-content
+  fetched: '2026-10-22'
+  sha256: 6ba001f547cd38d7b8756abb20220b05269ec36e085636299f0c0bcfd99706f4
+  tax_year: null
+- id: hud-2026-loan-limits
+  source: hud
+  kind: guide
+  publisher: hud
+  title: 'HUD: Federal Housing Administration announces 2026 loan limits'
+  url: https://www.hud.gov/news/hud-no-25-145
+  tax_year: 2026
+  selector: .region-content
+  fetched: '2026-10-22'
+  sha256: 97cb5f2e7b33ccc2a26e97007d4c8ddb222629b52e22662d8da963a209fa2747
+- id: hud-ml-2023-05
+  source: hud
+  kind: guide
+  publisher: hud
+  title: 'HUD Mortgagee Letter 2023-05: Reduction of FHA annual mortgage insurance premium (MIP) rates'
+  url: https://www.hud.gov/sites/dfiles/OCHCO/documents/2023-05hsgml.pdf
+  format: pdf
+  notes: Current FHA upfront (1.75%) and annual MIP rate tables, effective 2023-03-20.
+  fetched: '2026-10-22'
+  sha256: aadeeba515d4a11d159c99b7bfc65bae5e998688482f8ceaa36169cdd5263fd8
+  tax_year: null
+- id: cfpb-key-terms
+  source: glossary
+  kind: glossary
+  publisher: cfpb
+  title: 'CFPB: Mortgage key terms'
+  url: https://www.consumerfinance.gov/consumer-tools/mortgages/answers/key-terms/
+  selector: .u-layout-grid__main
+  aliases:
+    PMI:
+    - private mortgage insurance
+    PITI:
+    - principal, interest, taxes, and insurance
+    - principal interest taxes and insurance
+    Debt ratio:
+    - DTI
+    - debt-to-income ratio
+    - debt to income ratio
+    - debt-to-income
+    - DTI ratio
+    Loan-to-value ratio:
+    - LTV
+    - LTV ratio
+    - loan to value
+    Mortgage closing costs:
+    - closing costs
+    - closing cost
+    - settlement costs
+    FHA funding fee:
+    - MIP
+    - mortgage insurance premium
+    - FHA mortgage insurance premium
+    - UFMIP
+    - upfront mortgage insurance premium
+    Escrow:
+    - escrow account
+    - impound account
+    Earnest money:
+    - earnest money deposit
+    - good faith deposit
+    Annual Percentage Rate (APR):
+    - APR
+    Home equity line of credit (HELOC):
+    - HELOC
+  fetched: '2026-10-22'
+  sha256: 18e244a920ffd3051a69fda90ea065981f82157a24a70d73c05c17ed3b979281
+  tax_year: null
+- id: hud-ml-2023-17
+  source: glossary
+  kind: glossary
+  publisher: hud
+  title: HUD Mortgagee Letter 2023-17 (Handbook 4000.1)
+  url: https://www.hud.gov/sites/dfiles/OCHCO/documents/2023-17hsgml.pdf
+  format: pdf
+  terms:
+  - term: Reserves
+    aliases:
+    - cash reserves
+    - reserve
+    - reserves after closing
+    - months of reserves
+    start: Reserves refer to the sum of the Borrower
+    end: borrowed funds from any source.
+  notes: Only the Reserves definition is used; the rest of the letter is ADU and 203(k) policy.
+  fetched: '2026-10-22'
+  sha256: 5fac54e162a6e56ba6a7cf10e6aa7f41bdf4e527461eaa0faacf2ebc7db3fdd1
+  tax_year: null
