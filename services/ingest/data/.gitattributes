@@ -1,0 +1,2 @@
+# Fetched snapshots are checked against sha256 in sources.yaml; keep their bytes exact.
+* -text
