@@ -3,7 +3,17 @@ name = "homefund-housing-mcp"
 version = "0.1.0"
 description = "Home Fund housing_mcp service"
 requires-python = ">=3.12,<3.13"
-dependencies = ["homefund-contracts"]
+dependencies = [
+    "fastmcp>=4.1,<5",
+    "homefund-contracts",
+    "httpx>=0.28",
+    # Test-only. Member dependency-groups aren't installed by a root `uv sync`, so it lives
+    # here until the root dev group picks it up (docs/contract-requests/housing-mcp.md).
+    "respx>=0.22",
+]
+
+[project.scripts]
+homefund-housing-mcp = "homefund_housing_mcp.server:main"
 
 [tool.uv.sources]
 homefund-contracts = { workspace = true }

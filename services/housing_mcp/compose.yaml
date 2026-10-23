@@ -1,5 +1,45 @@
-# homefund-housing-mcp: owned by the housing_mcp lane. Redeclare any root network you join, e.g.
-# networks:
-#   internal:
-#     internal: true
-services: {}
+# homefund-housing-mcp: owned by the housing_mcp lane.
+# Joins `internal` (agent reaches it) and `egress` (FRED and RentCast only). The app refuses
+# any other host itself (http.ALLOWED_HOSTS); the per-service egress proxy is infra's.
+services:
+  housing-mcp:
+    build:
+      context: ../..
+      dockerfile: services/housing_mcp/Dockerfile
+    environment:
+      FRED_API_KEY: ${FRED_API_KEY:-}
+      RENTCAST_API_KEY: ${RENTCAST_API_KEY:-}
+      HOUSING_USE_MOCKS: ${HOUSING_USE_MOCKS:-true}
+      RENTCAST_MONTHLY_LIMIT: ${RENTCAST_MONTHLY_LIMIT:-50}
+      CLOCK_FIXED_DATE: ${CLOCK_FIXED_DATE:-}
+      HOUSING_CACHE_DIR: /var/cache/housing-mcp
+      HOUSING_MOCKS_DIR: /app/fixtures/mocks
+      HOUSING_MCP_PORT: "8102"
+    volumes:
+      # Survives restarts so RentCast's monthly quota isn't re-spent on cached addresses.
+      - housing_cache:/var/cache/housing-mcp
+    networks:
+      - internal
+      - egress
+    ports:
+      - "127.0.0.1:8102:8102"
+    healthcheck:
+      test:
+        - CMD
+        - /app/.venv/bin/python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8102/healthz', timeout=2)"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    read_only: true
+    tmpfs:
+      - /tmp
+
+networks:
+  internal:
+    internal: true
+  egress: {}
+
+volumes:
+  housing_cache:
