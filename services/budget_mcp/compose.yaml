@@ -1,5 +1,31 @@
-# homefund-budget-mcp: owned by the budget_mcp lane. Redeclare any root network you join, e.g.
-# networks:
-#   internal:
-#     internal: true
-services: {}
+# homefund-budget-mcp: owned by the budget_mcp lane.
+# Internal network only: no route out, no published ports. Reach it at
+# http://budget-mcp:8101/mcp from inside the stack.
+services:
+  budget-mcp:
+    build:
+      context: ../..
+      dockerfile: services/budget_mcp/Dockerfile
+    environment:
+      DATABASE_URL_RO: postgresql+psycopg://mcp_ro:${MCP_RO_PASSWORD:-mcp_ro_dev_password}@postgres:5432/${POSTGRES_DB:-homefund}
+      CLOCK_FIXED_DATE: ${CLOCK_FIXED_DATE:-}
+      BUDGET_MCP_HOST: 0.0.0.0
+      BUDGET_MCP_PORT: "8101"
+    expose:
+      - "8101"
+    read_only: true
+    healthcheck:
+      test:
+        - CMD
+        - /app/.venv/bin/python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8101/healthz', timeout=2)"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - internal
+
+networks:
+  internal:
+    internal: true
