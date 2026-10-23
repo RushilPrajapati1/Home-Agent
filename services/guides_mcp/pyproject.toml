@@ -1,13 +1,23 @@
 [project]
 name = "homefund-guides-mcp"
 version = "0.1.0"
-description = "Home Fund guides_mcp service"
+description = "Home Fund guides-mcp: hybrid search over CFPB and HUD guides and the glossary, with citations"
 requires-python = ">=3.12,<3.13"
-dependencies = ["homefund-contracts", "homefund-db"]
+dependencies = [
+    "homefund-contracts",
+    "homefund-db",
+    "homefund-embed",
+    "fastmcp>=4.1,<5",
+    "pgvector>=0.3.6",
+]
+
+[project.scripts]
+homefund-guides-mcp = "homefund_guides_mcp.server:main"
 
 [tool.uv.sources]
 homefund-contracts = { workspace = true }
 homefund-db = { workspace = true }
+homefund-embed = { workspace = true }
 
 [build-system]
 requires = ["uv_build>=0.9,<0.10"]

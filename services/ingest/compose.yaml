@@ -1,5 +1,31 @@
-# homefund-ingest: owned by the ingest lane. Redeclare any root network you join, e.g.
-# networks:
-#   internal:
-#     internal: true
-services: {}
+# homefund-ingest: a job, not a server (profile "jobs"). `make ingest` runs it on the host;
+# `docker compose --profile jobs run --rm ingest` runs it in the stack. It joins egress only
+# to fetch new CFPB/HUD files (allowlisted to consumerfinance.gov and hud.gov by the infra
+# lane's proxy); re-chunking reads the committed raw files in data/guides/.
+services:
+  ingest:
+    profiles: [jobs]
+    build:
+      context: ../..
+      dockerfile: services/ingest/Dockerfile
+    environment:
+      DATABASE_URL_APP: postgresql+psycopg://app_rw:${APP_RW_PASSWORD:-app_rw_dev_password}@postgres:5432/${POSTGRES_DB:-homefund}
+      EMBED_URL: http://embed:8200
+      CONTEXT_HEADER: ${CONTEXT_HEADER:-on}
+      CLOCK_FIXED_DATE: ${CLOCK_FIXED_DATE:-}
+    volumes:
+      - ./data/guides:/app/services/ingest/data/guides
+      - ./sources.yaml:/app/services/ingest/sources.yaml
+    depends_on:
+      postgres:
+        condition: service_healthy
+      embed:
+        condition: service_healthy
+    networks:
+      - internal
+      - egress
+
+networks:
+  internal:
+    internal: true
+  egress: {}

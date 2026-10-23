@@ -1,5 +1,30 @@
-# homefund-guides-mcp: owned by the guides_mcp lane. Redeclare any root network you join, e.g.
-# networks:
-#   internal:
-#     internal: true
-services: {}
+# homefund-guides-mcp: FastMCP over streamable HTTP at http://guides-mcp:8103/mcp.
+# Reads guide_chunks as mcp_ro (read-only), embeds and reranks through the embed service.
+# Internal network only: no egress.
+services:
+  guides-mcp:
+    build:
+      context: ../..
+      dockerfile: services/guides_mcp/Dockerfile
+    environment:
+      DATABASE_URL_MCP: postgresql+psycopg://mcp_ro:${MCP_RO_PASSWORD:-mcp_ro_dev_password}@postgres:5432/${POSTGRES_DB:-homefund}
+      EMBED_URL: http://embed:8200
+      GUIDES_MCP_HOST: 0.0.0.0
+      GUIDES_MCP_PORT: "8103"
+      CLOCK_FIXED_DATE: ${CLOCK_FIXED_DATE:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      embed:
+        condition: service_healthy
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8103/healthz')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+networks:
+  internal:
+    internal: true
