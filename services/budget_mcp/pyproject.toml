@@ -11,7 +11,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["httpx>=0.28"]
+test = ["httpx2>=2.5"]
 
 [project.scripts]
 homefund-budget-mcp = "homefund_budget_mcp.server:main"

@@ -1,6 +1,6 @@
 """Start budget-mcp in-process and call every tool through an MCP client.
 
-The client speaks streamable HTTP to the server's ASGI app through httpx's ASGI
+The client speaks streamable HTTP to the server's ASGI app through httpx2's ASGI
 transport, so the user header is exercised end to end without opening a socket.
 """
 
@@ -12,7 +12,7 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
-import httpx
+import httpx2
 import pytest
 from fastmcp import Client
 from fastmcp.client.transports import StreamableHttpTransport
@@ -44,12 +44,12 @@ async def client_for(repo: Any, clock: FixedClock, user_id: UUID | None) -> Asyn
 
     def factory(
         headers: dict[str, str] | None = None,
-        timeout: httpx.Timeout | None = None,
-        auth: httpx.Auth | None = None,
+        timeout: httpx2.Timeout | None = None,
+        auth: httpx2.Auth | None = None,
         **kwargs: Any,
-    ) -> httpx.AsyncClient:
-        return httpx.AsyncClient(
-            transport=httpx.ASGITransport(app=app),
+    ) -> httpx2.AsyncClient:
+        return httpx2.AsyncClient(
+            transport=httpx2.ASGITransport(app=app),
             headers=headers,
             timeout=timeout,
             auth=auth,
